@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CKD Predictor</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="header-inner">
+        <div class="logo">
+            <span class="logo-icon">⬡</span>
+            <span class="logo-text">NephroCheck</span>
+        </div>
+        <p class="header-sub">Chronic Kidney Disease Risk Predictor</p>
+    </div>
+</header>
+
+<main class="container">
+
+    {% if result %}
+    <div class="result-banner {{ 'result-positive' if result.is_ckd else 'result-negative' }}">
+        <div class="result-icon">{{ '⚠' if result.is_ckd else '✓' }}</div>
+        <div class="result-text">
+            <h2>{{ result.label }}</h2>
+            <p>Model confidence: <strong>{{ result.confidence }}%</strong></p>
+            <p class="result-note">ROC-AUC 0.83 · 10 features selected from 51 · Not for clinical use</p>
+        </div>
+        <div class="result-bars">
+            <div class="bar-row">
+                <span>CKD</span>
+                <div class="bar-track"><div class="bar-fill bar-ckd" style="width:{{ result.ckd_prob }}%"></div></div>
+                <span>{{ result.ckd_prob }}%</span>
+            </div>
+            <div class="bar-row">
+                <span>No CKD</span>
+                <div class="bar-track"><div class="bar-fill bar-nockd" style="width:{{ result.no_ckd_prob }}%"></div></div>
+                <span>{{ result.no_ckd_prob }}%</span>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <section class="form-card">
+        <div class="form-header">
+            <h1>Patient Assessment</h1>
+            <p>10 features selected from 51 via permutation importance. Empty fields default to the dataset mean. All fields contribute meaningfully to the prediction.</p>
+        </div>
+
+        <form method="POST" action="/predict">
+
+            <div class="section-label">Kidney Function</div>
+            <div class="field-grid field-grid-3">
+                <div class="field field-highlight">
+                    <label for="SerumCreatinine">
+                        Serum Creatinine
+                        <span class="unit">mg/dL · range 0.5–5.0</span>
+                        <span class="badge">Most predictive</span>
+                    </label>
+                    <input type="number" id="SerumCreatinine" name="SerumCreatinine"
+                           step="0.01" min="0.5" max="5.0" placeholder="e.g. 2.75">
+                </div>
+                <div class="field field-highlight">
+                    <label for="GFR">
+                        GFR
+                        <span class="unit">mL/min · range 15–120</span>
+                        <span class="badge">Most predictive</span>
+                    </label>
+                    <input type="number" id="GFR" name="GFR"
+                           step="0.1" min="15" max="120" placeholder="e.g. 66.8">
+                </div>
+                <div class="field">
+                    <label for="ProteinInUrine">
+                        Protein in Urine
+                        <span class="unit">g/dL · range 0–5</span>
+                    </label>
+                    <input type="number" id="ProteinInUrine" name="ProteinInUrine"
+                           step="0.01" min="0" max="5" placeholder="e.g. 2.5">
+                </div>
+                <div class="field">
+                    <label for="HemoglobinLevels">
+                        Hemoglobin
+                        <span class="unit">g/dL · range 10–18</span>
+                    </label>
+                    <input type="number" id="HemoglobinLevels" name="HemoglobinLevels"
+                           step="0.1" min="10" max="18" placeholder="e.g. 13.9">
+                </div>
+                <div class="field">
+                    <label for="SerumElectrolytesSodium">
+                        Serum Sodium
+                        <span class="unit">mEq/L · range 135–145</span>
+                    </label>
+                    <input type="number" id="SerumElectrolytesSodium" name="SerumElectrolytesSodium"
+                           step="0.1" min="135" max="145" placeholder="e.g. 140">
+                </div>
+            </div>
+
+            <div class="section-label">Metabolic</div>
+            <div class="field-grid field-grid-3">
+                <div class="field">
+                    <label for="FastingBloodSugar">
+                        Fasting Blood Sugar
+                        <span class="unit">mg/dL · range 70–200</span>
+                    </label>
+                    <input type="number" id="FastingBloodSugar" name="FastingBloodSugar"
+                           step="0.1" min="70" max="200" placeholder="e.g. 132">
+                </div>
+            </div>
+
+            <div class="section-label">Symptoms</div>
+            <div class="field-grid field-grid-3">
+                <div class="field">
+                    <label for="MuscleCramps">
+                        Muscle Cramps
+                        <span class="unit">severity 0–7</span>
+                    </label>
+                    <input type="number" id="MuscleCramps" name="MuscleCramps"
+                           step="0.1" min="0" max="7" placeholder="e.g. 3.5">
+                </div>
+                <div class="field">
+                    <label for="Itching">
+                        Itching
+                        <span class="unit">severity 0–10</span>
+                    </label>
+                    <input type="number" id="Itching" name="Itching"
+                           step="0.1" min="0" max="10" placeholder="e.g. 5.0">
+                </div>
+                <div class="field">
+                    <label for="NauseaVomiting">
+                        Nausea / Vomiting
+                        <span class="unit">severity 0–7</span>
+                    </label>
+                    <input type="number" id="NauseaVomiting" name="NauseaVomiting"
+                           step="0.1" min="0" max="7" placeholder="e.g. 3.5">
+                </div>
+            </div>
+
+            <div class="section-label">Lifestyle</div>
+            <div class="field-grid field-grid-3">
+                <div class="field">
+                    <label for="PhysicalActivity">
+                        Physical Activity
+                        <span class="unit">level 0–10</span>
+                    </label>
+                    <input type="number" id="PhysicalActivity" name="PhysicalActivity"
+                           step="0.1" min="0" max="10" placeholder="e.g. 5.0">
+                </div>
+            </div>
+
+            <div class="form-footer">
+                <button type="submit" class="btn-predict">Run Prediction</button>
+                <button type="reset" class="btn-reset">Clear Form</button>
+            </div>
+
+        </form>
+    </section>
+
+    <div class="info-strip">
+        <div class="info-item">
+            <span class="info-num">10</span>
+            <span class="info-label">features used<br><small>selected from 51</small></span>
+        </div>
+        <div class="info-divider"></div>
+        <div class="info-item">
+            <span class="info-num">0.83</span>
+            <span class="info-label">ROC-AUC<br><small>up from 0.77 (all 51)</small></span>
+        </div>
+        <div class="info-divider"></div>
+        <div class="info-item">
+            <span class="info-num">1,659</span>
+            <span class="info-label">training patients<br><small>91.9% CKD · 8.1% no CKD</small></span>
+        </div>
+        <div class="info-divider"></div>
+        <div class="info-item">
+            <span class="info-num">GBM</span>
+            <span class="info-label">algorithm<br><small>Gradient Boosting</small></span>
+        </div>
+    </div>
+
+    <footer class="disclaimer">
+        <p>⚕ Educational project only — not for clinical use. Features selected by permutation importance on a held-out test set. 41 features dropped because shuffling them did not hurt model performance.</p>
+        <p>Dataset: Chronic Kidney Disease · 1,659 patients · Kaggle</p>
+    </footer>
+</main>
+
+<script>
+    window.addEventListener("load", () => {
+        const banner = document.querySelector(".result-banner");
+        if (banner) banner.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+</script>
+
+</body>
+</html>

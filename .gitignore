@@ -1,0 +1,10 @@
+data/
+outputs/model.pkl
+outputs/*.pkl
+__pycache__/
+*.pyc
+.env
+venv/
+.venv/
+*.egg-info/
+.DS_Store
