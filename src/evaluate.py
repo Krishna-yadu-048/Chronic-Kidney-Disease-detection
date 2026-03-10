@@ -1,8 +1,3 @@
-"""
-evaluate.py
-Evaluation and diagnostic plots for the CKD model.
-"""
-
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")

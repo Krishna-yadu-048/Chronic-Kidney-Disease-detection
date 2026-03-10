@@ -1,18 +1,3 @@
-"""
-data_loader.py
-Loads the CKD dataset and defines the selected feature set.
-
-Feature selection rationale:
-  Started with 51 features and used permutation importance on a held-out
-  test set to rank them. Features with zero or negative permutation
-  importance were dropped — shuffling them made the model no worse,
-  meaning they carry no real signal.
-
-  Result: 10 features retained out of 51.
-  AUC improved from 0.77 (all 51) → 0.84 (top 10).
-  Extra features were adding noise, not signal.
-"""
-
 import pandas as pd
 
 TARGET_COL = "Diagnosis"

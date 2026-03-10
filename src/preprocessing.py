@@ -1,13 +1,3 @@
-"""
-preprocessing.py
-Preprocessing pipeline for the reduced-feature CKD dataset.
-
-No missing values in this dataset, so preprocessing is:
-  1. Select the 10 chosen features
-  2. StandardScaler (fit on train only — no leakage)
-  3. Oversample minority class on training set only
-"""
-
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler

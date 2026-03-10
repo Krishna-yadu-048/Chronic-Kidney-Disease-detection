@@ -1,18 +1,3 @@
-"""
-model.py
-GBM model with hyperparameters tuned for the 10-feature dataset.
-
-Tuning was done by grid search over n_estimators, max_depth, learning_rate.
-Best params found: n_estimators=100, max_depth=4, learning_rate=0.05
-
-Compared to the 51-feature model:
-  - AUC:     0.77  →  0.84   (+0.07)
-  - MacroF1: 0.66  →  0.68   (+0.02)
-  - Recall(No CKD): 0.41 → 0.48 (+0.07)
-
-Fewer features → less noise → better generalisation.
-"""
-
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import StratifiedKFold, cross_validate
 import joblib

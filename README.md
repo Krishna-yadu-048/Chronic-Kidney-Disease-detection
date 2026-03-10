@@ -1,5 +1,11 @@
 # Chronic Kidney Disease Prediction
 **MSc Artificial Intelligence — Portfolio Project**
+---
+
+![Feature Importance](outputs/app_image.png)
+
+
+
 
 ---
 
